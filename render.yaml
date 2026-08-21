@@ -1,6 +1,24 @@
-services: 
-  - type: web 
-    name: flow-ai 
-    env: python 
-    buildCommand: pip install -r requirements.txt 
-    startCommand: uvicorn web_app:app --host 0.0.0.0 --port $PORT 
+services:
+  - type: web
+    name: flow-ai
+    env: python
+    buildCommand: |
+      pip install -r requirements.txt
+      npm --prefix frontend install
+      npm --prefix frontend run build
+    startCommand: uvicorn web_app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: AI_PROVIDER
+        value: groq
+      - key: OPENAI_MODEL
+        value: openai/gpt-oss-120b
+      - key: GROQ_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SERVE_REACT
+        value: "true"
+      - key: WORKFLOW_EXECUTOR
+        value: "thread"

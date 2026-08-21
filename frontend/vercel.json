@@ -2,7 +2,7 @@
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
   "build": {
     "env": {
-      "VITE_API_URL": "https://evaluator-engine-web.onrender.com"
+      "VITE_API_URL": "https://flow-ai-vlml.onrender.com"
     }
   }
 }

@@ -21,6 +21,7 @@ import asyncio
 import copy
 import json
 import logging
+import os
 import re
 import threading
 import time
@@ -660,9 +661,33 @@ def start_run(
     # Persist record to disk so worker process can load it if needed
     _persist_run(wf_id, run_id, record)
 
-    # Enqueue to Huey worker (cross-process execution)
-    from workflows.queue import execute_workflow_task
-    execute_workflow_task(workflow, run_id, dry_run, inputs or {}, p_cfg)
+    # Try Huey queue first (if consumer process is running), else use thread
+    _use_thread = os.environ.get("WORKFLOW_EXECUTOR", "auto").lower() in ("thread", "inline")
+    if not _use_thread:
+        try:
+            from workflows.queue import execute_workflow_task
+            execute_workflow_task(workflow, run_id, dry_run, inputs or {}, p_cfg)
+            logger.info("Enqueued run %s to Huey", run_id)
+            return run_id
+        except Exception as _q_err:
+            logger.warning("Huey enqueue failed (%s), falling back to thread", _q_err)
+            _use_thread = True
+
+    if _use_thread:
+        def _thread_target():
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            try:
+                loop.run_until_complete(
+                    _execute_async(workflow, run_id, record, dry_run, inputs, None, p_cfg)
+                )
+            finally:
+                loop.close()
+
+        t = threading.Thread(target=_thread_target, daemon=True, name=f"wf-run-{run_id}")
+        t.start()
+        logger.info("Run %s started in background thread", run_id)
+
     return run_id
 
 

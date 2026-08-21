@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import asyncio
 import json
@@ -479,7 +479,7 @@ async def _lifespan(app):
     except Exception:
         pass
 
-app = FastAPI(title="Assignment Intelligence Platform", version="0.1", lifespan=_lifespan)
+app = FastAPI(title="Flow AI – Workflow Automation Platform", version="1.0", lifespan=_lifespan)
 
 
 # â”€â”€ CORS â€” allows the React frontend (Vercel) to call this API â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -488,8 +488,10 @@ try:
     _frontend_origins = [
         "http://localhost:5173",                        # Vite dev
         "http://localhost:3000",                        # alternate dev
-        "https://evaluator-engine.vercel.app",          # Vercel production
-        "https://evaluator-engine-web.onrender.com",    # Render (same-origin calls)
+        "https://evaluator-engine.vercel.app",          # old Vercel production
+        "https://evaluator-engine-web.onrender.com",    # old Render
+        "https://flow-ai-52xb-six.vercel.app",          # Flow AI Vercel
+        "https://flow-ai-vlml.onrender.com",            # Flow AI Render (self)
     ]
     # Also allow any *.vercel.app preview deploy (covers all Vercel preview URLs)
     app.add_middleware(
@@ -510,6 +512,22 @@ try:  # Optional: will be available after `pip install -r requirements.txt`
     templates = Jinja2Templates(directory="templates")
 except Exception:
     templates = None
+
+# ── Serve compiled React frontend (when deployed on Render) ───────────────
+# Set SERVE_REACT=true in env to enable. Build: npm --prefix frontend run build
+_REACT_DIST = Path("frontend") / "dist"
+_SERVE_REACT = os.environ.get("SERVE_REACT", "").lower() in ("1", "true", "yes")
+
+if _SERVE_REACT and _REACT_DIST.is_dir():
+    try:
+        from fastapi.staticfiles import StaticFiles
+        # Mount assets sub-directory at /assets (Vite outputs here)
+        _assets_dir = _REACT_DIST / "assets"
+        if _assets_dir.is_dir():
+            app.mount("/assets", StaticFiles(directory=str(_assets_dir)), name="react-assets")
+        logger.info("React frontend static files mounted from %s", _REACT_DIST)
+    except Exception as _e:
+        logger.warning("Failed to mount React static files: %s", _e)
 
 
 @app.post("/presence/ping")
@@ -763,6 +781,13 @@ def auth_demo_instructor(request: Request, password: str = Form(...)):
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request, problem_id: str = ""):
+    # When SERVE_REACT is enabled (Render production), serve the Flow AI React app
+    if _SERVE_REACT and _REACT_DIST.is_dir():
+        index_html = _REACT_DIST / "index.html"
+        if index_html.exists():
+            return HTMLResponse(content=index_html.read_text(encoding="utf-8"))
+
+    # Legacy: old education platform HTML
     user = _current_user(request)
     if user:
         role = str(user.get("role") or "").lower()
@@ -3414,15 +3439,18 @@ async def api_ai_chat(request: Request):
     return JSONResponse(result)
 
 
-import os
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+# ── SPA catch-all: serve React index.html for all non-API routes ──────────
+# This replaces the duplicate static mount below. Already handled above via
+# _SERVE_REACT. The catch-all route below handles deep React Router paths.
 
-if os.path.exists("frontend/dist"):
-    app.mount("/assets", StaticFiles(directory="frontend/dist/assets"), name="assets")
+if _SERVE_REACT and _REACT_DIST.is_dir():
+    from fastapi.responses import FileResponse as _FileResponse
 
-    @app.get("/{full_path:path}")
-    async def serve_react_app(full_path: str):
-        if full_path.startswith("api"):
-            return None
-        return FileResponse("frontend/dist/index.html")
+    @app.get("/{full_path:path}", response_class=HTMLResponse, include_in_schema=False)
+    async def _spa_fallback(full_path: str):
+        """Serve React index.html for all paths that don't match an API route."""
+        # API routes are already handled above — this catches everything else
+        index_html = _REACT_DIST / "index.html"
+        if index_html.exists():
+            return HTMLResponse(content=index_html.read_text(encoding="utf-8"))
+        return HTMLResponse("<h1>Flow AI</h1><p>Frontend build not found. Run: npm --prefix frontend run build</p>", status_code=503)
