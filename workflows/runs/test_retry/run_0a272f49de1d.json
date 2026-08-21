@@ -1,0 +1,49 @@
+{
+  "run_id": "run_0a272f49de1d",
+  "workflow_id": "test_retry",
+  "workflow_name": "Retry test",
+  "status": "succeeded",
+  "started_at": "2026-08-19T08:10:35.592198+00:00",
+  "finished_at": "2026-08-19T08:10:35.595575+00:00",
+  "node_states": {
+    "n1": {
+      "node_id": "n1",
+      "status": "success",
+      "started_at": "2026-08-19T08:10:35.594439+00:00",
+      "finished_at": "2026-08-19T08:10:35.595575+00:00",
+      "attempt": 1,
+      "outputs": {
+        "result": {
+          "status": "simulated",
+          "integration": "nonexistent_service",
+          "operation": "do"
+        }
+      },
+      "error": null
+    }
+  },
+  "logs": [
+    {
+      "ts": "2026-08-19T08:10:35.594439+00:00",
+      "level": "info",
+      "msg": "Starting workflow 'Retry test' run_id=run_0a272f49de1d"
+    },
+    {
+      "ts": "2026-08-19T08:10:35.594439+00:00",
+      "level": "info",
+      "msg": "Execution order: ['n1']"
+    },
+    {
+      "ts": "2026-08-19T08:10:35.594439+00:00",
+      "level": "info",
+      "msg": "[RUN] n1 attempt 1/2 type=action"
+    },
+    {
+      "ts": "2026-08-19T08:10:35.595575+00:00",
+      "level": "info",
+      "msg": "[OK] n1"
+    }
+  ],
+  "variables": {},
+  "error": null
+}

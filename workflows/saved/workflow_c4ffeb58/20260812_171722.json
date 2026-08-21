@@ -1,0 +1,384 @@
+{
+  "name": "Google Form \u2192 Google Sheets",
+  "description": "Captures every new Google Form response, enriches it with AI, validates it, and appends a structured row to Google Sheets. Sends a confirmation email to the respondent.",
+  "nodes": [
+    {
+      "id": "validate_input",
+      "type": "action",
+      "name": "Validate Form Response",
+      "depends_on": [],
+      "action": {
+        "integration": "platform.validator",
+        "operation": "validate_schema",
+        "params": {
+          "data": "{{form_response}}",
+          "rules": [
+            {
+              "field": "respondent_email",
+              "type": "email",
+              "required": true
+            },
+            {
+              "field": "respondent_name",
+              "type": "string",
+              "min_length": 2,
+              "required": true
+            }
+          ]
+        }
+      },
+      "error_handler": {
+        "on_error": "fail",
+        "notify": [
+          {
+            "channel": "email",
+            "to": "admin@myorg.com",
+            "subject": "Form validation failed",
+            "body": "Response from {{respondent_email}} failed validation: {{$error.message}}",
+            "severity": "warning"
+          }
+        ]
+      },
+      "outputs": {
+        "is_valid": "${form_response.valid}"
+      }
+    },
+    {
+      "id": "check_duplicate",
+      "type": "action",
+      "name": "Check for Duplicate Submission",
+      "depends_on": [
+        "validate_input"
+      ],
+      "action": {
+        "integration": "google.sheets",
+        "operation": "query_rows",
+        "auth": "GOOGLE_SERVICE_ACCOUNT_JSON",
+        "params": {
+          "spreadsheet_id": "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms",
+          "sheet": "Responses",
+          "filter": "email = '{{respondent_email}}'"
+        }
+      },
+      "outputs": {
+        "is_duplicate": "${check_duplicate.result.count > 0}"
+      },
+      "retry": {
+        "max_attempts": 3,
+        "backoff_strategy": "exponential",
+        "initial_delay": "PT2S"
+      }
+    },
+    {
+      "id": "duplicate_gate",
+      "type": "condition",
+      "name": "Is Duplicate?",
+      "depends_on": [
+        "check_duplicate"
+      ],
+      "condition_node": {
+        "expression": "${is_duplicate}",
+        "branches": [
+          {
+            "case": "true",
+            "next": "notify_duplicate"
+          },
+          {
+            "case": "false",
+            "next": "ai_enrich"
+          }
+        ]
+      }
+    },
+    {
+      "id": "notify_duplicate",
+      "type": "notification",
+      "name": "Notify Duplicate Submission",
+      "depends_on": [
+        "duplicate_gate"
+      ],
+      "notification": {
+        "targets": [
+          {
+            "channel": "email",
+            "to": "{{respondent_email}}",
+            "subject": "We already received your response",
+            "body": "Hi {{respondent_name}}, we already have a response from you. Contact support if this is an error.",
+            "severity": "info"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ai_enrich",
+      "type": "ai",
+      "name": "AI \u2014 Enrich and Classify Response",
+      "depends_on": [
+        "duplicate_gate"
+      ],
+      "condition": {
+        "expression": "!${is_duplicate}"
+      },
+      "ai": {
+        "provider": "openai",
+        "model": "gpt-4o-mini",
+        "system_prompt": "You are a data classification assistant. Return valid JSON only.",
+        "prompt": "Classify and enrich this form response:\n{{form_response}}\n\nReturn JSON with keys: sentiment (positive/neutral/negative), category (academic/technical/general), needs_review (true if contains profanity or suspicious content), summary (1 sentence).",
+        "temperature": 0.2,
+        "response_format": "json",
+        "response_schema": {
+          "type": "object",
+          "required": [
+            "sentiment",
+            "category",
+            "needs_review",
+            "summary"
+          ],
+          "properties": {
+            "sentiment": {
+              "type": "string",
+              "enum": [
+                "positive",
+                "neutral",
+                "negative"
+              ]
+            },
+            "category": {
+              "type": "string"
+            },
+            "needs_review": {
+              "type": "boolean"
+            },
+            "summary": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "timeout": {
+        "duration": "PT30S",
+        "on_timeout": "fallback",
+        "fallback_node_id": "skip_ai"
+      },
+      "retry": {
+        "max_attempts": 2,
+        "backoff_strategy": "fixed",
+        "initial_delay": "PT3S"
+      },
+      "outputs": {
+        "ai_sentiment": "${ai_enrich.result.sentiment}",
+        "ai_category": "${ai_enrich.result.category}",
+        "needs_review": "${ai_enrich.result.needs_review}",
+        "enriched_data": "${ai_enrich.result}"
+      }
+    },
+    {
+      "id": "skip_ai",
+      "type": "transform",
+      "name": "Default AI Fields (AI unavailable)",
+      "transform": {
+        "mappings": [
+          {
+            "target": "${ai_sentiment}",
+            "value": "neutral"
+          },
+          {
+            "target": "${ai_category}",
+            "value": "general"
+          },
+          {
+            "target": "${needs_review}",
+            "value": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "review_gate",
+      "type": "condition",
+      "name": "Needs Human Review?",
+      "depends_on": [
+        "ai_enrich",
+        "skip_ai"
+      ],
+      "condition_node": {
+        "expression": "${needs_review}",
+        "branches": [
+          {
+            "case": "true",
+            "next": "human_review"
+          },
+          {
+            "case": "false",
+            "next": "append_to_sheets"
+          }
+        ]
+      }
+    },
+    {
+      "id": "human_review",
+      "type": "human_approval",
+      "name": "Reviewer Approval Gate",
+      "depends_on": [
+        "review_gate"
+      ],
+      "human_approval": {
+        "approvers": [
+          "moderator@myorg.com",
+          "admin@myorg.com"
+        ],
+        "approval_mode": "any",
+        "instructions": "Please review this form response before it is added to the database.",
+        "data_to_review": {
+          "Respondent": "{{respondent_name}} ({{respondent_email}})",
+          "AI Sentiment": "{{ai_sentiment}}",
+          "AI Summary": "{{enriched_data.summary}}"
+        },
+        "expiry": "PT24H",
+        "on_expiry": "auto_reject",
+        "channels": [
+          "email",
+          "slack"
+        ]
+      },
+      "outputs": {
+        "approved": "${human_review.result.approved}"
+      }
+    },
+    {
+      "id": "append_to_sheets",
+      "type": "action",
+      "name": "Append Row to Google Sheets",
+      "depends_on": [
+        "review_gate",
+        "human_review"
+      ],
+      "condition": {
+        "logic": "OR",
+        "rules": [
+          {
+            "expression": "!${needs_review}"
+          },
+          {
+            "expression": "${approved} == true"
+          }
+        ]
+      },
+      "action": {
+        "integration": "google.sheets",
+        "operation": "append_row",
+        "auth": "GOOGLE_SERVICE_ACCOUNT_JSON",
+        "params": {
+          "spreadsheet_id": "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms",
+          "sheet": "Responses",
+          "values": [
+            "{{respondent_name}}",
+            "{{respondent_email}}",
+            "{{ai_category}}",
+            "{{ai_sentiment}}",
+            "{{enriched_data.summary}}",
+            "{{$now}}"
+          ]
+        }
+      },
+      "retry": {
+        "max_attempts": 5,
+        "backoff_strategy": "exponential",
+        "initial_delay": "PT1S",
+        "max_delay": "PT1M"
+      },
+      "outputs": {
+        "row_index": "${append_to_sheets.result.updated_range}"
+      }
+    },
+    {
+      "id": "send_confirmation",
+      "type": "notification",
+      "name": "Send Confirmation Email",
+      "depends_on": [
+        "append_to_sheets"
+      ],
+      "notification": {
+        "targets": [
+          {
+            "channel": "email",
+            "to": "{{respondent_email}}",
+            "subject": "Thanks for your response, {{respondent_name}}!",
+            "body": "Hi {{respondent_name}},\n\nWe have received your response and it has been recorded successfully.\n\nSummary: {{enriched_data.summary}}\n\nThank you!",
+            "severity": "info"
+          }
+        ]
+      }
+    }
+  ],
+  "edges": [],
+  "variables": [
+    {
+      "name": "respondent_name",
+      "type": "string",
+      "description": "Full name from form"
+    },
+    {
+      "name": "respondent_email",
+      "type": "string",
+      "sensitive": true
+    },
+    {
+      "name": "form_response",
+      "type": "object",
+      "description": "Raw form response payload"
+    },
+    {
+      "name": "is_duplicate",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "name": "ai_sentiment",
+      "type": "string",
+      "description": "AI-classified sentiment"
+    },
+    {
+      "name": "ai_category",
+      "type": "string",
+      "description": "AI-classified category"
+    },
+    {
+      "name": "needs_review",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "name": "row_index",
+      "type": "number",
+      "description": "Row appended to sheet"
+    },
+    {
+      "name": "enriched_data",
+      "type": "object",
+      "description": "AI-enriched form data"
+    }
+  ],
+  "triggers": [
+    {
+      "id": "google_form_trigger",
+      "type": "google_forms",
+      "name": "New Form Response",
+      "enabled": true,
+      "config": {
+        "form_id": "1FAIpQLSfXYZ123abc",
+        "poll_interval": "PT1M",
+        "auth_secret": "GOOGLE_SERVICE_ACCOUNT_JSON"
+      },
+      "input_mapping": {
+        "respondent_name": "$.response.answers.name.textAnswers.answers[0].value",
+        "respondent_email": "$.response.answers.email.textAnswers.answers[0].value",
+        "form_response": "$.response"
+      }
+    }
+  ],
+  "id": "workflow_c4ffeb58",
+  "created_by": "subi",
+  "created_at": "2026-08-12T17:17:22Z",
+  "updated_at": "2026-08-12T17:17:22Z"
+}

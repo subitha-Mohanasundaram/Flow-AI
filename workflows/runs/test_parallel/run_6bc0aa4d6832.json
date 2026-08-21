@@ -1,0 +1,131 @@
+{
+  "run_id": "run_6bc0aa4d6832",
+  "workflow_id": "test_parallel",
+  "workflow_name": "Parallel Test",
+  "status": "succeeded",
+  "started_at": "2026-08-19T08:10:34.365132+00:00",
+  "finished_at": "2026-08-19T08:10:34.382897+00:00",
+  "node_states": {
+    "start": {
+      "node_id": "start",
+      "status": "success",
+      "started_at": "2026-08-19T08:10:34.367651+00:00",
+      "finished_at": "2026-08-19T08:10:34.378635+00:00",
+      "attempt": 1,
+      "outputs": {
+        "result": null
+      },
+      "error": null
+    },
+    "par": {
+      "node_id": "par",
+      "status": "success",
+      "started_at": "2026-08-19T08:10:34.378635+00:00",
+      "finished_at": "2026-08-19T08:10:34.382275+00:00",
+      "attempt": 0,
+      "outputs": {
+        "branches": 2
+      },
+      "error": null
+    },
+    "ba1": {
+      "node_id": "ba1",
+      "status": "success",
+      "started_at": "2026-08-19T08:10:34.379147+00:00",
+      "finished_at": "2026-08-19T08:10:34.382275+00:00",
+      "attempt": 0,
+      "outputs": {
+        "result": {
+          "status": "simulated",
+          "integration": "?",
+          "operation": "?"
+        }
+      },
+      "error": null
+    },
+    "bb1": {
+      "node_id": "bb1",
+      "status": "success",
+      "started_at": "2026-08-19T08:10:34.379147+00:00",
+      "finished_at": "2026-08-19T08:10:34.382275+00:00",
+      "attempt": 0,
+      "outputs": {
+        "result": {
+          "status": "simulated",
+          "integration": "?",
+          "operation": "?"
+        }
+      },
+      "error": null
+    },
+    "end": {
+      "node_id": "end",
+      "status": "success",
+      "started_at": "2026-08-19T08:10:34.382275+00:00",
+      "finished_at": "2026-08-19T08:10:34.382897+00:00",
+      "attempt": 1,
+      "outputs": {
+        "result": {
+          "status": "simulated",
+          "integration": "?",
+          "operation": "?"
+        }
+      },
+      "error": null
+    }
+  },
+  "logs": [
+    {
+      "ts": "2026-08-19T08:10:34.367651+00:00",
+      "level": "info",
+      "msg": "Starting workflow 'Parallel Test' run_id=run_6bc0aa4d6832"
+    },
+    {
+      "ts": "2026-08-19T08:10:34.367651+00:00",
+      "level": "info",
+      "msg": "Execution order: ['start', 'par', 'end']"
+    },
+    {
+      "ts": "2026-08-19T08:10:34.368673+00:00",
+      "level": "info",
+      "msg": "[RUN] start attempt 1/1 type=trigger"
+    },
+    {
+      "ts": "2026-08-19T08:10:34.378635+00:00",
+      "level": "info",
+      "msg": "[OK] start"
+    },
+    {
+      "ts": "2026-08-19T08:10:34.378635+00:00",
+      "level": "info",
+      "msg": "[PARALLEL] par: starting branches"
+    },
+    {
+      "ts": "2026-08-19T08:10:34.379147+00:00",
+      "level": "info",
+      "msg": "  [PARALLEL:branch_a] Running ba1"
+    },
+    {
+      "ts": "2026-08-19T08:10:34.379147+00:00",
+      "level": "info",
+      "msg": "  [PARALLEL:branch_b] Running bb1"
+    },
+    {
+      "ts": "2026-08-19T08:10:34.382275+00:00",
+      "level": "info",
+      "msg": "[PARALLEL] par: all branches done"
+    },
+    {
+      "ts": "2026-08-19T08:10:34.382275+00:00",
+      "level": "info",
+      "msg": "[RUN] end attempt 1/1 type=action"
+    },
+    {
+      "ts": "2026-08-19T08:10:34.382897+00:00",
+      "level": "info",
+      "msg": "[OK] end"
+    }
+  ],
+  "variables": {},
+  "error": null
+}

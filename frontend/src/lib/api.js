@@ -29,25 +29,11 @@ export const api = {
   register: (body) => req('POST', '/api/auth/register', body),
   me:       ()     => req('GET',  '/api/me'),
 
-  // Assignments
-  assignments: ()   => req('GET', '/api/assignments'),
-  assignment:  (id) => req('GET', `/api/assignment/${id}`),
-
-  // Submit
-  submit: (formData) => req('POST', '/api/submit', formData, true),
-
-  // Evaluation
-  evaluation: (id) => req('GET', `/api/evaluation/${id}`),
-  report:     (id) => req('GET', `/api/report/${id}`),
-
-  // Leaderboard
-  leaderboard: (id) => req('GET', `/api/leaderboard/${id}`),
-
   // Workflows CRUD
   workflows:      ()         => req('GET',    '/api/workflows'),
-  workflow:       (id)       => req('GET',    `/api/workflows/${id}`),
-  createWorkflow: (body)     => req('POST',   '/api/workflows', body),
-  updateWorkflow: (id, body) => req('PUT',    `/api/workflows/${id}`, body),
+  workflow:       (id)       => req('GET',    `/api/workflows/${id}`).then(r => r.workflow || r),
+  createWorkflow: (body)     => req('POST',   '/api/workflows', body).then(r => r.workflow || r),
+  updateWorkflow: (id, body) => req('PUT',    `/api/workflows/${id}`, body).then(r => r.workflow || r),
   deleteWorkflow: (id)       => req('DELETE', `/api/workflows/${id}`),
 
   // Workflow Examples
@@ -72,6 +58,7 @@ export const api = {
 
   // AI Generate
   generateWorkflow: (body) => req('POST', '/api/ai/generate-workflow', body),
+  aiChat:           (body) => req('POST', '/api/ai/chat', body),
 
   // Versioning
   workflowVersions: (id)             => req('GET',  `/api/workflows/${id}/versions`),

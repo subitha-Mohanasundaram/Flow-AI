@@ -1,0 +1,185 @@
+{
+  "id": "78ac3fe5-d8ff-4ab9-b05c-fb300e85c8d7",
+  "schema_version": "1.0",
+  "workflow_id": "78ac3fe5-d8ff-4ab9-b05c-fb300e85c8d7",
+  "name": "AI Generated Workflow",
+  "description": "",
+  "version": "1.0.0",
+  "metadata": {
+    "owner": "subi",
+    "created_at": "2026-08-19T09:04:39Z",
+    "updated_at": "2026-08-19T09:04:39Z"
+  },
+  "settings": {
+    "execution_mode": "dag",
+    "max_concurrent_runs": 5,
+    "timeout": "PT10M"
+  },
+  "variables": [],
+  "triggers": [
+    {
+      "id": "manual_trigger",
+      "type": "manual"
+    }
+  ],
+  "nodes": [
+    {
+      "schema_version": "1.0",
+      "workflow_id": "get_current_weather_chennai",
+      "name": "Get Current Weather for Chennai",
+      "description": "Manual workflow that fetches the current weather for Chennai using the Weather integration and posts the result to Slack.",
+      "version": "1.0.0",
+      "metadata": {
+        "owner": "weather_team",
+        "team": "operations",
+        "labels": [
+          "weather",
+          "manual"
+        ],
+        "created_at": "2026-08-19T12:00:00Z",
+        "updated_at": "2026-08-19T12:00:00Z",
+        "category": "information"
+      },
+      "settings": {
+        "max_concurrent_runs": 5,
+        "timeout": "PT5M",
+        "timezone": "UTC",
+        "execution_mode": "sequential"
+      },
+      "variables": [
+        {
+          "name": "location",
+          "type": "string",
+          "default": "Chennai",
+          "description": "City for which to retrieve weather",
+          "scope": "workflow"
+        },
+        {
+          "name": "slack_channel",
+          "type": "string",
+          "default": "#weather-updates",
+          "description": "Slack channel to post the weather update",
+          "scope": "workflow"
+        }
+      ],
+      "triggers": [
+        {
+          "type": "manual"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "fetch_weather",
+          "name": "Fetch Weather",
+          "type": "action",
+          "depends_on": [],
+          "description": "Call Weather integration to get current weather for the specified location",
+          "action": {
+            "integration": "weather",
+            "operation": "get_current_weather",
+            "params": {
+              "location": "{{location}}"
+            }
+          },
+          "retry": {
+            "max_attempts": 3,
+            "backoff_strategy": "exponential",
+            "initial_delay": "PT1S"
+          },
+          "timeout": {
+            "duration": "PT30S"
+          },
+          "error_handler": {
+            "on_error": "continue",
+            "fallback_node_id": null
+          }
+        },
+        {
+          "id": "format_message",
+          "name": "Format Message",
+          "type": "transform",
+          "depends_on": [
+            "fetch_weather"
+          ],
+          "description": "Create a human\u2011readable message from the weather response",
+          "transform": {
+            "mappings": [
+              {
+                "target": "message",
+                "value": "Current weather in {{location}}: {{fetch_weather.response}}"
+              }
+            ]
+          }
+        },
+        "retry",
+        ":",
+        {
+          "max_attempts": 2,
+          "backoff_strategy": "exponential",
+          "initial_delay": "PT1S"
+        },
+        "timeout",
+        ":",
+        {
+          "duration": "PT10S"
+        },
+        "error_handler",
+        ":",
+        {
+          "on_error": "continue",
+          "fallback_node_id": null
+        }
+      ],
+      "id": "get_current_weather_for_chennai",
+      "depends_on": [],
+      "position": {
+        "x": 250,
+        "y": 100
+      }
+    },
+    {
+      "id": "send_slack",
+      "name": "Send Slack Notification",
+      "type": "notification",
+      "depends_on": [
+        "format_message"
+      ],
+      "description": "Post the formatted weather message to Slack",
+      "notification": {
+        "targets": [
+          {
+            "channel": "slack",
+            "to": "{{slack_channel}}",
+            "subject": "Weather Update",
+            "body": "{{format_message.message}}"
+          }
+        ]
+      },
+      "retry": {
+        "max_attempts": 3,
+        "backoff_strategy": "exponential",
+        "initial_delay": "PT2S"
+      },
+      "timeout": {
+        "duration": "PT20S"
+      },
+      "error_handler": {
+        "on_error": "continue",
+        "fallback_node_id": null
+      },
+      "position": {
+        "x": 250,
+        "y": 250
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-format_message-send_slack",
+      "source": "format_message",
+      "target": "send_slack"
+    }
+  ],
+  "created_at": "2026-08-19T09:04:39Z",
+  "updated_at": "2026-08-19T09:04:39Z"
+}

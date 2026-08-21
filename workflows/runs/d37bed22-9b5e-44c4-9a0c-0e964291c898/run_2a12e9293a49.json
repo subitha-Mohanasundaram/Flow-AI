@@ -1,0 +1,12 @@
+{
+  "run_id": "run_2a12e9293a49",
+  "workflow_id": "d37bed22-9b5e-44c4-9a0c-0e964291c898",
+  "workflow_name": "Webhook Trigger E2E Test",
+  "status": "pending",
+  "started_at": "2026-08-20T10:01:21.832992+00:00",
+  "finished_at": null,
+  "node_states": {},
+  "logs": [],
+  "variables": {},
+  "error": null
+}

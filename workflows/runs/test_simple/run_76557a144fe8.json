@@ -1,0 +1,91 @@
+{
+  "run_id": "run_76557a144fe8",
+  "workflow_id": "test_simple",
+  "workflow_name": "Simple Test Workflow",
+  "status": "succeeded",
+  "started_at": "2026-08-11T17:42:22.433260+00:00",
+  "finished_at": "2026-08-11T17:42:22.437565+00:00",
+  "node_states": {
+    "n1": {
+      "node_id": "n1",
+      "status": "success",
+      "started_at": "2026-08-11T17:42:22.436268+00:00",
+      "finished_at": "2026-08-11T17:42:22.436899+00:00",
+      "attempt": 1,
+      "outputs": {
+        "result": null
+      },
+      "error": null
+    },
+    "n2": {
+      "node_id": "n2",
+      "status": "success",
+      "started_at": "2026-08-11T17:42:22.436899+00:00",
+      "finished_at": "2026-08-11T17:42:22.436899+00:00",
+      "attempt": 1,
+      "outputs": {
+        "result": {
+          "status": "simulated",
+          "integration": "rest_api",
+          "operation": "get"
+        }
+      },
+      "error": null
+    },
+    "n3": {
+      "node_id": "n3",
+      "status": "success",
+      "started_at": "2026-08-11T17:42:22.437565+00:00",
+      "finished_at": "2026-08-11T17:42:22.437565+00:00",
+      "attempt": 1,
+      "outputs": {
+        "result": {}
+      },
+      "error": null
+    }
+  },
+  "logs": [
+    {
+      "ts": "2026-08-11T17:42:22.436268+00:00",
+      "level": "info",
+      "msg": "Starting workflow 'Simple Test Workflow' run_id=run_76557a144fe8"
+    },
+    {
+      "ts": "2026-08-11T17:42:22.436268+00:00",
+      "level": "info",
+      "msg": "Execution order: ['n1', 'n2', 'n3']"
+    },
+    {
+      "ts": "2026-08-11T17:42:22.436268+00:00",
+      "level": "info",
+      "msg": "[RUN] n1 attempt 1/1 type=trigger"
+    },
+    {
+      "ts": "2026-08-11T17:42:22.436899+00:00",
+      "level": "info",
+      "msg": "[OK] n1"
+    },
+    {
+      "ts": "2026-08-11T17:42:22.436899+00:00",
+      "level": "info",
+      "msg": "[RUN] n2 attempt 1/1 type=action"
+    },
+    {
+      "ts": "2026-08-11T17:42:22.436899+00:00",
+      "level": "info",
+      "msg": "[OK] n2"
+    },
+    {
+      "ts": "2026-08-11T17:42:22.437565+00:00",
+      "level": "info",
+      "msg": "[RUN] n3 attempt 1/1 type=transform"
+    },
+    {
+      "ts": "2026-08-11T17:42:22.437565+00:00",
+      "level": "info",
+      "msg": "[OK] n3"
+    }
+  ],
+  "variables": {},
+  "error": null
+}

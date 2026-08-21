@@ -205,8 +205,12 @@ For {complexity} workflows, include {{'simple': 3, 'moderate': 6, 'complex': 10}
         raw = self._ai.chat(messages, response_format="json", max_tokens=max_tokens)
         return json.loads(raw)
 
-    def _post_process(self, wf: Dict) -> Dict:
+    def _post_process(self, wf: Any) -> Dict:
         """Ensure required fields, fix common AI mistakes."""
+        if isinstance(wf, list):
+            wf = {"nodes": wf}
+        if not isinstance(wf, dict):
+            wf = {}
         # Ensure schema_version
         wf.setdefault("schema_version", "1.0")
         wf.setdefault("workflow_id", f"wf_{uuid.uuid4().hex[:8]}")
@@ -229,18 +233,41 @@ For {complexity} workflows, include {{'simple': 3, 'moderate': 6, 'complex': 10}
 
         # Fix node IDs — ensure all are snake_case
         node_ids = set()
-        for node in wf.get("nodes", []):
+        edges = []
+        nodes = wf.get("nodes", [])
+        has_any_depends = any(node.get("depends_on") for node in nodes[1:]) if len(nodes) > 1 else True
+        
+        for i, node in enumerate(nodes):
             if not node.get("id"):
                 node["id"] = re.sub(r"\W+", "_", node.get("name", "node")).lower()
             node["id"] = re.sub(r"\W+", "_", node["id"]).lower()
             if node["id"] in node_ids:
                 node["id"] += f"_{uuid.uuid4().hex[:4]}"
             node_ids.add(node["id"])
-            node.setdefault("depends_on", [])
+            
+            if not has_any_depends and i > 0:
+                node["depends_on"] = [nodes[i-1]["id"]]
+            else:
+                node.setdefault("depends_on", [])
+                
             node.setdefault("description", node.get("name", ""))
+            
+            # Auto-layout for React Flow
+            if "position" not in node:
+                node["position"] = {"x": 250, "y": 100 + (i * 150)}
+            
+            # Generate edges from depends_on
+            for parent in node.get("depends_on", []):
+                edges.append({
+                    "id": f"e-{parent}-{node['id']}",
+                    "source": parent,
+                    "target": node['id']
+                })
+        
+        wf["edges"] = edges
 
         # Ensure first node has no depends_on
-        if wf["nodes"]:
+        if wf.get("nodes"):
             wf["nodes"][0]["depends_on"] = []
 
         return wf

@@ -1,0 +1,68 @@
+{
+  "run_id": "run_15ad18062ae2",
+  "workflow_id": "workflow_63958675",
+  "workflow_name": "Run-DryRun",
+  "status": "succeeded",
+  "started_at": "2026-08-11T17:39:15.775897+00:00",
+  "finished_at": "2026-08-11T17:39:15.793875+00:00",
+  "node_states": {
+    "trigger_83f221": {
+      "node_id": "trigger_83f221",
+      "status": "success",
+      "started_at": "2026-08-11T17:39:15.779419+00:00",
+      "finished_at": "2026-08-11T17:39:15.788536+00:00",
+      "attempt": 1,
+      "outputs": {
+        "result": null
+      },
+      "error": null
+    },
+    "action_83f221": {
+      "node_id": "action_83f221",
+      "status": "success",
+      "started_at": "2026-08-11T17:39:15.788536+00:00",
+      "finished_at": "2026-08-11T17:39:15.793875+00:00",
+      "attempt": 1,
+      "outputs": {
+        "result": {
+          "sent": 0
+        }
+      },
+      "error": null
+    }
+  },
+  "logs": [
+    {
+      "ts": "2026-08-11T17:39:15.779419+00:00",
+      "level": "info",
+      "msg": "Starting workflow 'Run-DryRun' run_id=run_15ad18062ae2"
+    },
+    {
+      "ts": "2026-08-11T17:39:15.779419+00:00",
+      "level": "info",
+      "msg": "Execution order: ['trigger_83f221', 'action_83f221']"
+    },
+    {
+      "ts": "2026-08-11T17:39:15.779419+00:00",
+      "level": "info",
+      "msg": "[RUN] trigger_83f221 attempt 1/1 type=trigger"
+    },
+    {
+      "ts": "2026-08-11T17:39:15.788536+00:00",
+      "level": "info",
+      "msg": "[OK] trigger_83f221"
+    },
+    {
+      "ts": "2026-08-11T17:39:15.788536+00:00",
+      "level": "info",
+      "msg": "[RUN] action_83f221 attempt 1/1 type=notification"
+    },
+    {
+      "ts": "2026-08-11T17:39:15.793875+00:00",
+      "level": "info",
+      "msg": "[OK] action_83f221"
+    }
+  ],
+  "variables": {},
+  "error": null
+}

@@ -1,0 +1,47 @@
+{
+  "run_id": "run_d00d51cb8f04",
+  "workflow_id": "test_fallback_dryrun",
+  "workflow_name": "Fallback Dry-Run Test",
+  "status": "succeeded",
+  "started_at": "2026-08-19T08:10:38.109810+00:00",
+  "finished_at": "2026-08-19T08:10:38.113290+00:00",
+  "node_states": {
+    "transform_data": {
+      "node_id": "transform_data",
+      "status": "success",
+      "started_at": "2026-08-19T08:10:38.111566+00:00",
+      "finished_at": "2026-08-19T08:10:38.113290+00:00",
+      "attempt": 1,
+      "outputs": {
+        "result": {
+          "output": "Output: test"
+        }
+      },
+      "error": null
+    }
+  },
+  "logs": [
+    {
+      "ts": "2026-08-19T08:10:38.111566+00:00",
+      "level": "info",
+      "msg": "Starting workflow 'Fallback Dry-Run Test' run_id=run_d00d51cb8f04"
+    },
+    {
+      "ts": "2026-08-19T08:10:38.111566+00:00",
+      "level": "info",
+      "msg": "Execution order: ['transform_data']"
+    },
+    {
+      "ts": "2026-08-19T08:10:38.111566+00:00",
+      "level": "info",
+      "msg": "[RUN] transform_data attempt 1/1 type=transform"
+    },
+    {
+      "ts": "2026-08-19T08:10:38.113290+00:00",
+      "level": "info",
+      "msg": "[OK] transform_data"
+    }
+  ],
+  "variables": {},
+  "error": null
+}

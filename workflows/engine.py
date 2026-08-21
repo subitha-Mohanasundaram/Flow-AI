@@ -287,7 +287,28 @@ class NodeExecutor:
         if self.dry_run:
             logger.info("  [DRY-RUN] webhook %s %s headers=%s body=%s", method, url, headers, body)
             return {"result": {"status": 200, "body": {"simulated": True}}}
-        raise NotImplementedError(f"Live webhook {method} {url} not implemented")
+        
+        # Live Webhook Execution
+        import requests
+        try:
+            req_kwargs = {"timeout": 30}
+            if headers and isinstance(headers, dict):
+                req_kwargs["headers"] = headers
+            if body:
+                if isinstance(body, (dict, list)):
+                    req_kwargs["json"] = body
+                else:
+                    req_kwargs["data"] = body
+                    
+            resp = requests.request(method, url, **req_kwargs)
+            try:
+                resp_data = resp.json()
+            except Exception:
+                resp_data = resp.text
+            return {"result": {"status": resp.status_code, "body": resp_data}}
+        except Exception as e:
+            logger.error("Live webhook failed: %s", e)
+            raise RuntimeError(f"Webhook execution failed: {e}")
 
     def _exec_ai(self, node: Dict, ctx: Dict) -> Dict:
         ai_cfg = node.get("ai", {})
@@ -297,7 +318,17 @@ class NodeExecutor:
         if self.dry_run:
             logger.info("  [DRY-RUN] ai %s/%s prompt_chars=%d", provider, model, len(prompt))
             return {"result": "Simulated AI response for prompt: " + prompt[:100] + "..."}
-        raise NotImplementedError(f"Live AI node {provider}/{model} not implemented")
+        
+        # Live AI Execution
+        from ai_builder.ai_client import AIClient
+        client = AIClient()
+        # Ensure we use the specified model if possible, otherwise rely on the client's default
+        try:
+            response = client.chat([{"role": "user", "content": prompt}], max_tokens=1000)
+            return {"result": response}
+        except Exception as e:
+            logger.error("Live AI execution failed: %s", e)
+            raise RuntimeError(f"AI node execution failed: {e}")
 
     def _exec_notification(self, node: Dict, ctx: Dict) -> Dict:
         targets = node.get("notification", {}).get("targets", [])

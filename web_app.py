@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import asyncio
 import json
@@ -463,7 +463,7 @@ from contextlib import asynccontextmanager
 
 @asynccontextmanager
 async def _lifespan(app):
-    # ── Startup ──────────────────────────────────────────────────
+    # â”€â”€ Startup â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     try:
         from workflows.trigger_runtime import get_runtime
         _rt = get_runtime()
@@ -472,7 +472,7 @@ async def _lifespan(app):
     except Exception as _e:
         logger.warning("TriggerRuntime start failed: %s", _e)
     yield
-    # ── Shutdown ─────────────────────────────────────────────────
+    # â”€â”€ Shutdown â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     try:
         from workflows.trigger_runtime import get_runtime
         get_runtime().stop()
@@ -482,7 +482,7 @@ async def _lifespan(app):
 app = FastAPI(title="Assignment Intelligence Platform", version="0.1", lifespan=_lifespan)
 
 
-# ── CORS — allows the React frontend (Vercel) to call this API ────────────
+# â”€â”€ CORS â€” allows the React frontend (Vercel) to call this API â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 try:
     from fastapi.middleware.cors import CORSMiddleware
     _frontend_origins = [
@@ -2549,10 +2549,10 @@ def _start_background_worker() -> None:
     print("[embedded-worker] thread launched", flush=True)
 
 
-# ═══════════════════════════════════════════════════════════════════
-#  REST API  —  /api/*  routes for the React frontend
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+#  REST API  â€”  /api/*  routes for the React frontend
 #  All return JSON. The old Jinja2 HTML routes still work in parallel.
-# ═══════════════════════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 @app.post("/api/auth/register")
 async def api_register(payload: dict):
@@ -2760,7 +2760,7 @@ async def api_health():
     return JSONResponse({"status": "ok", "service": "evaluator-engine"})
 
 
-# ── AI Natural Language Edit API ────────────────────────────────────────────
+# â”€â”€ AI Natural Language Edit API â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 @app.post("/api/workflows/{wf_id}/ai-edit")
 async def api_ai_edit_preview(wf_id: str, request: Request):
@@ -2813,7 +2813,7 @@ async def api_ai_edit_preview(wf_id: str, request: Request):
 async def api_ai_edit_apply(wf_id: str, request: Request):
     """
     Apply a previewed edit: accepts the updated_workflow JSON and saves it.
-    No second AI call — the frontend sends back what the preview returned.
+    No second AI call â€” the frontend sends back what the preview returned.
     """
     user = _current_user(request)
     if not user:
@@ -2844,7 +2844,7 @@ async def api_ai_edit_apply(wf_id: str, request: Request):
     return JSONResponse({"success": True, "workflow": wf})
 
 
-# ── Workflow Execution API ──────────────────────────────────────────────────
+# â”€â”€ Workflow Execution API â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 @app.post("/api/workflows/{wf_id}/run")
 async def api_workflow_run(wf_id: str, request: Request):
@@ -2912,12 +2912,12 @@ async def api_run_stream(run_id: str, request: Request):
     Auth (in priority order):
       1. Authorization: Bearer <token>   (normal API calls)
       2. Cookie: session=<token>         (Jinja2 pages)
-      3. ?token=<token>                  (EventSource fallback — validated server-side)
+      3. ?token=<token>                  (EventSource fallback â€” validated server-side)
     """
     from fastapi.responses import StreamingResponse, Response
     from workflows.executor import get_run
 
-    # ── Auth: check header / cookie / query param ──────────────
+    # â”€â”€ Auth: check header / cookie / query param â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     def _resolve_token() -> str | None:
         auth = request.headers.get("Authorization", "")
         if auth.startswith("Bearer "):
@@ -2940,7 +2940,7 @@ async def api_run_stream(run_id: str, request: Request):
         terminal       = {"succeeded", "failed", "cancelled", "timed_out"}
         last_log_count = 0
         idle_ticks     = 0
-        max_idle       = 240   # 2-minute max with no activity (240 × 0.5s)
+        max_idle       = 240   # 2-minute max with no activity (240 Ã— 0.5s)
 
         while True:
             if await request.is_disconnected():
@@ -2981,7 +2981,7 @@ async def api_run_stream(run_id: str, request: Request):
 
 
 
-# ── Workflow API ────────────────────────────────────────────────────────────
+# â”€â”€ Workflow API â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Stored as JSON files under ./workflows/saved/<id>.json so no extra DB is needed.
 
 _WF_DIR = Path("workflows") / "saved"
@@ -3083,9 +3083,9 @@ async def api_workflow_update(wf_id: str, payload: dict, request: Request):
     wf["updated_at"] = now
     wf.setdefault("metadata", {})["updated_at"] = now
     _save_wf(wf)
-    # ── Persist a version snapshot ────────────────────────────────
+    # â”€â”€ Persist a version snapshot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     _save_wf_version(wf_id, wf)
-    # ── Reload trigger runtime so new cron/webhook triggers register
+    # â”€â”€ Reload trigger runtime so new cron/webhook triggers register
     try:
         from workflows.trigger_runtime import get_runtime
         get_runtime().reload()
@@ -3111,7 +3111,7 @@ async def api_workflow_delete(wf_id: str, request: Request):
     return JSONResponse({"ok": True})
 
 
-# ── Webhook trigger ingress ─────────────────────────────────────────────────
+# â”€â”€ Webhook trigger ingress â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 @app.post("/api/webhooks/{path:path}")
 async def api_webhook_trigger(path: str, request: Request):
@@ -3146,7 +3146,7 @@ async def api_webhook_trigger(path: str, request: Request):
     return JSONResponse({"run_id": run_id, "workflow_id": wf_id}, status_code=202)
 
 
-# ── Workflow Versioning ─────────────────────────────────────────────────────
+# â”€â”€ Workflow Versioning â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 _VER_DIR = Path("workflows") / "versions"
 
@@ -3211,11 +3211,22 @@ async def api_workflow_restore(wf_id: str, version_ts: str, request: Request):
     return JSONResponse({"success": True, "workflow": wf})
 
 
-# ── Human Approval ──────────────────────────────────────────────────────────
+# â”€â”€ Human Approval â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-_APPROVAL_SIGNALS: Dict[str, asyncio.Event] = {}  # run_id → Event
-_APPROVAL_DECISIONS: Dict[str, Dict] = {}          # run_id → {approved, approver, comment}
+_APPROVAL_SIGNALS: Dict[str, asyncio.Event] = {}  # run_id -> Event
+_APPROVAL_DECISIONS: Dict[str, Dict] = {}          # run_id -> {approved, approver, comment}
 
+import json
+from pathlib import Path
+
+def _write_approval(run_id: str, decision: dict):
+    _APPROVAL_DECISIONS[run_id] = decision
+    if run_id in _APPROVAL_SIGNALS:
+        _APPROVAL_SIGNALS[run_id].set()
+    
+    appr_dir = Path('workflows/approvals')
+    appr_dir.mkdir(parents=True, exist_ok=True)
+    (appr_dir / f'{run_id}.json').write_text(json.dumps(decision), encoding='utf-8')
 
 @app.post("/api/runs/{run_id}/approve")
 async def api_run_approve(run_id: str, request: Request):
@@ -3226,13 +3237,30 @@ async def api_run_approve(run_id: str, request: Request):
         body = await request.json()
     except Exception:
         body = {}
-    _APPROVAL_DECISIONS[run_id] = {
+    
+    _write_approval(run_id, {
         "approved": True,
         "approver": user.get("username", "unknown"),
         "comment":  body.get("comment", ""),
-    }
-    if run_id in _APPROVAL_SIGNALS:
-        _APPROVAL_SIGNALS[run_id].set()
+    })
+    return JSONResponse({"ok": True, "run_id": run_id})
+
+
+@app.post("/api/runs/{run_id}/reject")
+async def api_run_reject(run_id: str, request: Request):
+    user = _current_user(request)
+    if not user:
+        return JSONResponse({"error": "Unauthorized"}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    
+    _write_approval(run_id, {
+        "approved": False,
+        "approver": user.get("username", "unknown"),
+        "comment":  body.get("comment", "Rejected"),
+    })
     return JSONResponse({"ok": True, "run_id": run_id})
 
 
@@ -3255,7 +3283,7 @@ async def api_run_reject(run_id: str, request: Request):
     return JSONResponse({"ok": True, "run_id": run_id})
 
 
-# ── Plugin Configuration ────────────────────────────────────────────────────
+# â”€â”€ Plugin Configuration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 @app.get("/api/plugin-configs")
 async def api_plugin_configs_get(request: Request):
@@ -3294,7 +3322,7 @@ async def api_plugin_configs_save(request: Request):
     return JSONResponse({"ok": True})
 
 
-# ── Example Workflow Catalogue ──────────────────────────────────────────────
+# â”€â”€ Example Workflow Catalogue â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 @app.get("/api/workflow-examples")
 async def api_workflow_examples(request: Request):
@@ -3320,7 +3348,7 @@ async def api_workflow_examples(request: Request):
     return JSONResponse({"examples": examples})
 
 
-# ── AI Workflow Generation ──────────────────────────────────────────────────
+# â”€â”€ AI Workflow Generation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 @app.post("/api/ai/generate-workflow")
 async def api_ai_generate_workflow(request: Request):
@@ -3361,4 +3389,27 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+@app.post("/api/ai/chat")
+async def api_ai_chat(request: Request):
+    user = _current_user(request)
+    if not user:
+        return JSONResponse({"error": "Unauthorized"}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        return JSONResponse({"error": "Invalid JSON"}, status_code=400)
+    messages = body.get("messages", [])
+    if not messages:
+        return JSONResponse({"error": "messages is required"}, status_code=422)
+    try:
+        from ai_builder.ai_client import AIClient
+        from ai_builder.chat_agent import ChatAgent
+        client = AIClient()
+        agent = ChatAgent(client)
+        result = agent.chat(messages)
+    except Exception as e:
+        return JSONResponse({"error": f"AI builder unavailable: {e}"}, status_code=503)
+    return JSONResponse(result)
 

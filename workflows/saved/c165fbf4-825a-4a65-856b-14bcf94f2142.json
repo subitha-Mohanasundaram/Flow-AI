@@ -1,0 +1,42 @@
+{
+  "id": "c165fbf4-825a-4a65-856b-14bcf94f2142",
+  "schema_version": "1.0",
+  "workflow_id": "c165fbf4-825a-4a65-856b-14bcf94f2142",
+  "name": "AI Personalization E2E Test",
+  "description": "",
+  "version": "1.0.0",
+  "metadata": {
+    "owner": "subi",
+    "created_at": "2026-08-20T10:00:34Z",
+    "updated_at": "2026-08-20T10:00:34Z"
+  },
+  "settings": {
+    "execution_mode": "dag",
+    "max_concurrent_runs": 5,
+    "timeout": "PT10M"
+  },
+  "variables": [],
+  "triggers": [
+    {
+      "id": "manual_trigger",
+      "type": "manual"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "ai_personalizer",
+      "name": "Generate Welcome Message",
+      "type": "ai",
+      "depends_on": [],
+      "ai": {
+        "provider": "openai",
+        "model": "gpt-4o-mini",
+        "prompt": "Create a short 5-word welcome message for user Arun whose preference is concise.",
+        "output_var": "welcome_message"
+      }
+    }
+  ],
+  "edges": [],
+  "created_at": "2026-08-20T10:00:34Z",
+  "updated_at": "2026-08-20T10:00:34Z"
+}

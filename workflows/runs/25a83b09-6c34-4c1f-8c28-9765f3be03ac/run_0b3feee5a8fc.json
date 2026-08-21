@@ -1,0 +1,12 @@
+{
+  "run_id": "run_0b3feee5a8fc",
+  "workflow_id": "25a83b09-6c34-4c1f-8c28-9765f3be03ac",
+  "workflow_name": "Parent Subworkflow Test",
+  "status": "pending",
+  "started_at": "2026-08-20T10:01:37.435737+00:00",
+  "finished_at": null,
+  "node_states": {},
+  "logs": [],
+  "variables": {},
+  "error": null
+}

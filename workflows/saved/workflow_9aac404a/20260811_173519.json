@@ -1,0 +1,37 @@
+{
+  "name": "Update-Me",
+  "description": "Updated description",
+  "nodes": [
+    {
+      "id": "trigger_e9f05e",
+      "name": "Start",
+      "type": "trigger",
+      "trigger": {
+        "type": "manual"
+      }
+    },
+    {
+      "id": "action_e9f05e",
+      "name": "Notify",
+      "type": "notification",
+      "depends_on": [
+        "trigger_e9f05e"
+      ],
+      "notification": {
+        "channel": "slack",
+        "message": "Hello!"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "trigger_e9f05e",
+      "target": "action_e9f05e"
+    }
+  ],
+  "id": "workflow_9aac404a",
+  "created_by": "testuser_0aafcba3",
+  "created_at": "2026-08-11T17:35:19Z",
+  "updated_at": "2026-08-11T17:35:19Z",
+  "updated_by": "testuser_0aafcba3"
+}

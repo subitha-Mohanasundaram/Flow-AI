@@ -38,11 +38,13 @@ export default function Workflows() {
   async function handleCreate() {
     try {
       setCreating(true)
-      const wf = await api.createWorkflow({
+      const res = await api.createWorkflow({
         name: 'New Workflow', description: 'Created from Visual Builder',
         nodes: [], edges: [],
       })
-      navigate(`/workflows/${wf.id}`)
+      const wfId = res?.workflow?.id || res?.id
+      if (wfId) navigate(`/workflows/${wfId}`)
+      else load()
     } catch (e) {
       setError(e.message)
       setCreating(false)
@@ -73,7 +75,7 @@ export default function Workflows() {
   async function handleImportExample(ex) {
     setImporting(ex.file)
     try {
-      const wf = await api.createWorkflow({
+      const res = await api.createWorkflow({
         name:        ex.workflow.name || ex.name,
         description: ex.workflow.description || ex.description,
         nodes:       ex.workflow.nodes || [],
@@ -82,7 +84,9 @@ export default function Workflows() {
         triggers:    ex.workflow.triggers || [],
       })
       setShowExamples(false)
-      navigate(`/workflows/${wf.id}`)
+      const wfId = res?.workflow?.id || res?.id
+      if (wfId) navigate(`/workflows/${wfId}`)
+      else load()
     } catch (e) {
       setError(e.message)
     } finally {
@@ -92,7 +96,8 @@ export default function Workflows() {
 
   function handleGenerated(wf) {
     setShowAI(false)
-    if (wf?.id) navigate(`/workflows/${wf.id}`)
+    const wfId = wf?.workflow?.id || wf?.id
+    if (wfId) navigate(`/workflows/${wfId}`)
     else load()
   }
 

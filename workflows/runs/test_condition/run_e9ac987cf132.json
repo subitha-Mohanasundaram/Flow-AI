@@ -1,0 +1,84 @@
+{
+  "run_id": "run_e9ac987cf132",
+  "workflow_id": "test_condition",
+  "workflow_name": "Condition Test",
+  "status": "succeeded",
+  "started_at": "2026-08-19T08:10:34.673665+00:00",
+  "finished_at": "2026-08-19T08:10:34.680430+00:00",
+  "node_states": {
+    "n1": {
+      "node_id": "n1",
+      "status": "success",
+      "started_at": "2026-08-19T08:10:34.679044+00:00",
+      "finished_at": "2026-08-19T08:10:34.680430+00:00",
+      "attempt": 1,
+      "outputs": {
+        "result": null
+      },
+      "error": null
+    },
+    "n2": {
+      "node_id": "n2",
+      "status": "skipped",
+      "started_at": null,
+      "finished_at": null,
+      "attempt": 0,
+      "outputs": {},
+      "error": null
+    },
+    "n3": {
+      "node_id": "n3",
+      "status": "success",
+      "started_at": "2026-08-19T08:10:34.680430+00:00",
+      "finished_at": "2026-08-19T08:10:34.680430+00:00",
+      "attempt": 1,
+      "outputs": {
+        "result": {
+          "status": "simulated",
+          "integration": "?",
+          "operation": "?"
+        }
+      },
+      "error": null
+    }
+  },
+  "logs": [
+    {
+      "ts": "2026-08-19T08:10:34.679044+00:00",
+      "level": "info",
+      "msg": "Starting workflow 'Condition Test' run_id=run_e9ac987cf132"
+    },
+    {
+      "ts": "2026-08-19T08:10:34.679044+00:00",
+      "level": "info",
+      "msg": "Execution order: ['n1', 'n2', 'n3']"
+    },
+    {
+      "ts": "2026-08-19T08:10:34.679044+00:00",
+      "level": "info",
+      "msg": "[RUN] n1 attempt 1/1 type=trigger"
+    },
+    {
+      "ts": "2026-08-19T08:10:34.680430+00:00",
+      "level": "info",
+      "msg": "[OK] n1"
+    },
+    {
+      "ts": "2026-08-19T08:10:34.680430+00:00",
+      "level": "info",
+      "msg": "[SKIP] n2: condition false"
+    },
+    {
+      "ts": "2026-08-19T08:10:34.680430+00:00",
+      "level": "info",
+      "msg": "[RUN] n3 attempt 1/1 type=action"
+    },
+    {
+      "ts": "2026-08-19T08:10:34.680430+00:00",
+      "level": "info",
+      "msg": "[OK] n3"
+    }
+  ],
+  "variables": {},
+  "error": null
+}

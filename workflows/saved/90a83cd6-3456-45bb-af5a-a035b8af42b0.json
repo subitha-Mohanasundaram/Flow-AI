@@ -1,0 +1,55 @@
+{
+  "id": "90a83cd6-3456-45bb-af5a-a035b8af42b0",
+  "schema_version": "1.0",
+  "workflow_id": "90a83cd6-3456-45bb-af5a-a035b8af42b0",
+  "name": "Restore-Test",
+  "description": "Created by test suite",
+  "version": "1.0.0",
+  "metadata": {
+    "owner": "testuser_36e27256",
+    "created_at": "2026-08-19T08:10:02Z",
+    "updated_at": "2026-08-19T08:10:02Z"
+  },
+  "settings": {
+    "execution_mode": "dag",
+    "max_concurrent_runs": 5,
+    "timeout": "PT10M"
+  },
+  "variables": [],
+  "triggers": [
+    {
+      "id": "manual_trigger",
+      "type": "manual"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "trigger_343e69",
+      "name": "Start",
+      "type": "trigger",
+      "trigger": {
+        "type": "manual"
+      }
+    },
+    {
+      "id": "action_343e69",
+      "name": "Notify",
+      "type": "notification",
+      "depends_on": [
+        "trigger_343e69"
+      ],
+      "notification": {
+        "channel": "slack",
+        "message": "Hello!"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "trigger_343e69",
+      "target": "action_343e69"
+    }
+  ],
+  "created_at": "2026-08-19T08:10:02Z",
+  "updated_at": "2026-08-19T08:10:02Z"
+}

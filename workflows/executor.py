@@ -262,25 +262,29 @@ def _run_node_via_plugin(
         timeout_s = int(cfg.get("timeout_seconds", 3600))  # 1 hour default
         node_id  = node.get("id", "unknown")
 
-        # Import the shared approval signals from web_app (populated by approve/reject API)
-        try:
-            import web_app as _wa
-            import threading as _th
-            evt = _th.Event()
-            _wa._APPROVAL_SIGNALS[run_id] = evt
-            # Wait for approval decision
-            signaled = evt.wait(timeout=timeout_s)
-            decision = _wa._APPROVAL_DECISIONS.pop(run_id, None)
-            del _wa._APPROVAL_SIGNALS[run_id]
-            if not signaled or not decision:
-                raise TimeoutError(f"Human approval timed out after {timeout_s}s")
-            if not decision.get("approved"):
-                raise RuntimeError(f"Workflow rejected by {decision.get('approver')}: {decision.get('comment')}")
-            return {"result": {"approved": True, "approver": decision.get("approver"), "comment": decision.get("comment")}}
-        except (ImportError, AttributeError):
-            # web_app not running — auto-approve in test mode
-            logger.warning("human_approval: web_app not available, auto-approving (test mode)")
-            return {"result": {"approved": True, "approver": "system", "auto": True}}
+        # Cross-process: poll disk for approval file written by web_app approve/reject APIs
+        import json as _json, time as _time
+        appr_dir = Path("workflows/approvals")
+        appr_dir.mkdir(parents=True, exist_ok=True)
+        appr_file = appr_dir / f"{run_id}.json"
+
+        start_t = _time.time()
+        decision = None
+        while _time.time() - start_t < timeout_s:
+            if appr_file.exists():
+                try:
+                    decision = _json.loads(appr_file.read_text(encoding="utf-8"))
+                    appr_file.unlink(missing_ok=True)
+                except Exception:
+                    pass
+                break
+            _time.sleep(1)
+
+        if not decision:
+            raise TimeoutError(f"Human approval timed out after {timeout_s}s")
+        if not decision.get("approved"):
+            raise RuntimeError(f"Workflow rejected by {decision.get('approver')}: {decision.get('comment')}")
+        return {"result": {"approved": True, "approver": decision.get("approver"), "comment": decision.get("comment")}}
 
     # ── subworkflow node ─────────────────────────────────────────
     if node_type == "subworkflow":
@@ -430,13 +434,24 @@ async def _execute_async(
             if not node:
                 continue
 
-            # Skip if a dependency failed
+            # Skip if a dependency failed (but respect fallback_node_id routing)
             skip_reason = None
             for dep_id in node.get("depends_on", []):
                 dep_ns = record["node_states"].get(dep_id, {})
-                if dep_ns.get("status") == "failed":
+                dep_status = dep_ns.get("status")
+                if dep_status == "failed":
+                    dep_node = node_map.get(dep_id, {})
+                    fallback_id = (dep_node.get("error_handler") or {}).get("fallback_node_id")
+                    if fallback_id == node_id:
+                        continue  # allow fallback to execute when parent failed
                     skip_reason = f"dependency '{dep_id}' failed"
                     break
+                elif dep_status in ("success", "skipped"):
+                    dep_node = node_map.get(dep_id, {})
+                    fallback_id = (dep_node.get("error_handler") or {}).get("fallback_node_id")
+                    if fallback_id == node_id:
+                        skip_reason = "primary succeeded, skipping fallback"
+                        break
 
             if skip_reason:
                 _update_node(record, node_id, status="skipped")
@@ -642,18 +657,12 @@ def start_run(
     with _registry_lock:
         RUN_REGISTRY[run_id] = record
 
-    def _thread_target():
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        try:
-            loop.run_until_complete(
-                _execute_async(workflow, run_id, record, dry_run, inputs, on_update, p_cfg)
-            )
-        finally:
-            loop.close()
+    # Persist record to disk so worker process can load it if needed
+    _persist_run(wf_id, run_id, record)
 
-    t = threading.Thread(target=_thread_target, daemon=True, name=f"wf-run-{run_id}")
-    t.start()
+    # Enqueue to Huey worker (cross-process execution)
+    from workflows.queue import execute_workflow_task
+    execute_workflow_task(workflow, run_id, dry_run, inputs or {}, p_cfg)
     return run_id
 
 

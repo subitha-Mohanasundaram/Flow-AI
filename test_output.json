@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "workflow_id": "get_current_weather_chennai",
+  "name": "Get Current Weather for Chennai",
+  "description": "Manually triggered workflow that fetches the current weather for Chennai and returns the information to the requester.",
+  "version": "1.0.0",
+  "metadata": {
+    "owner": "weather_team",
+    "team": "operations",
+    "labels": [
+      "weather",
+      "manual"
+    ],
+    "created_at": "2026-08-19T12:00:00Z",
+    "updated_at": "2026-08-19T12:00:00Z",
+    "category": "information"
+  },
+  "settings": {
+    "max_concurrent_runs": 5,
+    "timeout": "PT2M",
+    "timezone": "Asia/Kolkata",
+    "execution_mode": "sequential"
+  },
+  "variables": [
+    {
+      "name": "city",
+      "type": "string",
+      "default": "Chennai",
+      "description": "City for which to retrieve weather",
+      "scope": "workflow"
+    },
+    {
+      "name": "weather_info",
+      "type": "string",
+      "default": "",
+      "description": "Raw weather data returned from API",
+      "scope": "node"
+    }
+  ],
+  "triggers": [
+    {
+      "type": "manual",
+      "manual": {}
+    }
+  ],
+  "nodes": [
+    {
+      "id": "manual_trigger",
+      "name": "Manual Trigger",
+      "type": "trigger",
+      "depends_on": [],
+      "description": "User manually initiates the weather request."
+    },
+    {
+      "id": "fetch_weather",
+      "name": "Fetch Weather",
+      "type": "action",
+      "depends_on": [
+        "manual_trigger"
+      ],
+      "description": "Calls the Weather integration to get current weather for Chennai.",
+      "action": {
+        "integration": "weather",
+        "operation": "get_current_weather",
+        "params": {
+          "city": "{{city}}"
+        }
+      },
+      "retry": {
+        "max_attempts": 3,
+        "backoff_strategy": "exponential",
+        "initial_delay": "PT1S"
+      },
+      "timeout": {
+        "duration": "PT30S"
+      },
+      "error_handler": {
+        "on_error": "continue",
+        "fallback_node_id": "return_weather"
+      }
+    },
+    {
+      "id": "return_weather",
+      "name": "Return Weather",
+      "type": "notification",
+      "depends_on": [
+        "fetch_weather"
+      ],
+      "description": "Returns the fetched weather information to the user.",
+      "notification": {
+        "targets": [
+          {
+            "channel": "response",
+            "to": "requester",
+            "subject": "Current Weather for {{city}}",
+            "body": "Here is the current weather data:\n{{weather_info}}"
+          }
+        ]
+      }
+    }
+  ]
+}

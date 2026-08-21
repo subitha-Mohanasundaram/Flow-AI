@@ -47,7 +47,14 @@ class AIClient:
     def _get_client(self):
         if self._client is None:
             import openai
-            self._client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+            provider = os.environ.get("AI_PROVIDER", "openai").lower()
+            if provider == "groq":
+                self._client = openai.OpenAI(
+                    base_url="https://api.groq.com/openai/v1",
+                    api_key=os.environ.get("GROQ_API_KEY")
+                )
+            else:
+                self._client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
         return self._client
 
     def chat(

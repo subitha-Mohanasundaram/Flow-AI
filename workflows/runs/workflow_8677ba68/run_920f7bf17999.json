@@ -1,0 +1,68 @@
+{
+  "run_id": "run_920f7bf17999",
+  "workflow_id": "workflow_8677ba68",
+  "workflow_name": "Run-Poll",
+  "status": "succeeded",
+  "started_at": "2026-08-11T17:39:15.835544+00:00",
+  "finished_at": "2026-08-11T17:39:15.839788+00:00",
+  "node_states": {
+    "trigger_733843": {
+      "node_id": "trigger_733843",
+      "status": "success",
+      "started_at": "2026-08-11T17:39:15.838791+00:00",
+      "finished_at": "2026-08-11T17:39:15.839788+00:00",
+      "attempt": 1,
+      "outputs": {
+        "result": null
+      },
+      "error": null
+    },
+    "action_733843": {
+      "node_id": "action_733843",
+      "status": "success",
+      "started_at": "2026-08-11T17:39:15.839788+00:00",
+      "finished_at": "2026-08-11T17:39:15.839788+00:00",
+      "attempt": 1,
+      "outputs": {
+        "result": {
+          "sent": 0
+        }
+      },
+      "error": null
+    }
+  },
+  "logs": [
+    {
+      "ts": "2026-08-11T17:39:15.838791+00:00",
+      "level": "info",
+      "msg": "Starting workflow 'Run-Poll' run_id=run_920f7bf17999"
+    },
+    {
+      "ts": "2026-08-11T17:39:15.838791+00:00",
+      "level": "info",
+      "msg": "Execution order: ['trigger_733843', 'action_733843']"
+    },
+    {
+      "ts": "2026-08-11T17:39:15.838791+00:00",
+      "level": "info",
+      "msg": "[RUN] trigger_733843 attempt 1/1 type=trigger"
+    },
+    {
+      "ts": "2026-08-11T17:39:15.839788+00:00",
+      "level": "info",
+      "msg": "[OK] trigger_733843"
+    },
+    {
+      "ts": "2026-08-11T17:39:15.839788+00:00",
+      "level": "info",
+      "msg": "[RUN] action_733843 attempt 1/1 type=notification"
+    },
+    {
+      "ts": "2026-08-11T17:39:15.839788+00:00",
+      "level": "info",
+      "msg": "[OK] action_733843"
+    }
+  ],
+  "variables": {},
+  "error": null
+}

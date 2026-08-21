@@ -1,0 +1,68 @@
+{
+  "run_id": "run_befed5ef3974",
+  "workflow_id": "workflow_ddcc2b7f",
+  "workflow_name": "Run-DryRun",
+  "status": "succeeded",
+  "started_at": "2026-08-11T17:42:32.419592+00:00",
+  "finished_at": "2026-08-11T17:42:32.585969+00:00",
+  "node_states": {
+    "trigger_4e84a7": {
+      "node_id": "trigger_4e84a7",
+      "status": "success",
+      "started_at": "2026-08-11T17:42:32.429359+00:00",
+      "finished_at": "2026-08-11T17:42:32.562190+00:00",
+      "attempt": 1,
+      "outputs": {
+        "result": null
+      },
+      "error": null
+    },
+    "action_4e84a7": {
+      "node_id": "action_4e84a7",
+      "status": "success",
+      "started_at": "2026-08-11T17:42:32.562190+00:00",
+      "finished_at": "2026-08-11T17:42:32.585969+00:00",
+      "attempt": 1,
+      "outputs": {
+        "result": {
+          "sent": 0
+        }
+      },
+      "error": null
+    }
+  },
+  "logs": [
+    {
+      "ts": "2026-08-11T17:42:32.429359+00:00",
+      "level": "info",
+      "msg": "Starting workflow 'Run-DryRun' run_id=run_befed5ef3974"
+    },
+    {
+      "ts": "2026-08-11T17:42:32.429359+00:00",
+      "level": "info",
+      "msg": "Execution order: ['trigger_4e84a7', 'action_4e84a7']"
+    },
+    {
+      "ts": "2026-08-11T17:42:32.429359+00:00",
+      "level": "info",
+      "msg": "[RUN] trigger_4e84a7 attempt 1/1 type=trigger"
+    },
+    {
+      "ts": "2026-08-11T17:42:32.562190+00:00",
+      "level": "info",
+      "msg": "[OK] trigger_4e84a7"
+    },
+    {
+      "ts": "2026-08-11T17:42:32.562190+00:00",
+      "level": "info",
+      "msg": "[RUN] action_4e84a7 attempt 1/1 type=notification"
+    },
+    {
+      "ts": "2026-08-11T17:42:32.585969+00:00",
+      "level": "info",
+      "msg": "[OK] action_4e84a7"
+    }
+  ],
+  "variables": {},
+  "error": null
+}

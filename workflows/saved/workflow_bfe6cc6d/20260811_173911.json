@@ -1,0 +1,36 @@
+{
+  "name": "Listed-fd76ce",
+  "description": "Created by test suite",
+  "nodes": [
+    {
+      "id": "trigger_e5d7d2",
+      "name": "Start",
+      "type": "trigger",
+      "trigger": {
+        "type": "manual"
+      }
+    },
+    {
+      "id": "action_e5d7d2",
+      "name": "Notify",
+      "type": "notification",
+      "depends_on": [
+        "trigger_e5d7d2"
+      ],
+      "notification": {
+        "channel": "slack",
+        "message": "Hello!"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "trigger_e5d7d2",
+      "target": "action_e5d7d2"
+    }
+  ],
+  "id": "workflow_bfe6cc6d",
+  "created_by": "testuser_ae407464",
+  "created_at": "2026-08-11T17:39:11Z",
+  "updated_at": "2026-08-11T17:39:11Z"
+}

@@ -1,0 +1,68 @@
+{
+  "run_id": "run_f78de2a884b4",
+  "workflow_id": "workflow_254e2984",
+  "workflow_name": "Run-Poll",
+  "status": "succeeded",
+  "started_at": "2026-08-11T17:42:32.613116+00:00",
+  "finished_at": "2026-08-11T17:42:32.626366+00:00",
+  "node_states": {
+    "trigger_0a8672": {
+      "node_id": "trigger_0a8672",
+      "status": "success",
+      "started_at": "2026-08-11T17:42:32.621635+00:00",
+      "finished_at": "2026-08-11T17:42:32.624370+00:00",
+      "attempt": 1,
+      "outputs": {
+        "result": null
+      },
+      "error": null
+    },
+    "action_0a8672": {
+      "node_id": "action_0a8672",
+      "status": "success",
+      "started_at": "2026-08-11T17:42:32.624370+00:00",
+      "finished_at": "2026-08-11T17:42:32.626366+00:00",
+      "attempt": 1,
+      "outputs": {
+        "result": {
+          "sent": 0
+        }
+      },
+      "error": null
+    }
+  },
+  "logs": [
+    {
+      "ts": "2026-08-11T17:42:32.621635+00:00",
+      "level": "info",
+      "msg": "Starting workflow 'Run-Poll' run_id=run_f78de2a884b4"
+    },
+    {
+      "ts": "2026-08-11T17:42:32.621635+00:00",
+      "level": "info",
+      "msg": "Execution order: ['trigger_0a8672', 'action_0a8672']"
+    },
+    {
+      "ts": "2026-08-11T17:42:32.621635+00:00",
+      "level": "info",
+      "msg": "[RUN] trigger_0a8672 attempt 1/1 type=trigger"
+    },
+    {
+      "ts": "2026-08-11T17:42:32.624370+00:00",
+      "level": "info",
+      "msg": "[OK] trigger_0a8672"
+    },
+    {
+      "ts": "2026-08-11T17:42:32.624370+00:00",
+      "level": "info",
+      "msg": "[RUN] action_0a8672 attempt 1/1 type=notification"
+    },
+    {
+      "ts": "2026-08-11T17:42:32.626366+00:00",
+      "level": "info",
+      "msg": "[OK] action_0a8672"
+    }
+  ],
+  "variables": {},
+  "error": null
+}

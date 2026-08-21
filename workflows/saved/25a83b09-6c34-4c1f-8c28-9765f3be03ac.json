@@ -1,0 +1,39 @@
+{
+  "id": "25a83b09-6c34-4c1f-8c28-9765f3be03ac",
+  "schema_version": "1.0",
+  "workflow_id": "25a83b09-6c34-4c1f-8c28-9765f3be03ac",
+  "name": "Parent Subworkflow Test",
+  "description": "",
+  "version": "1.0.0",
+  "metadata": {
+    "owner": "subi",
+    "created_at": "2026-08-20T10:01:35Z",
+    "updated_at": "2026-08-20T10:01:35Z"
+  },
+  "settings": {
+    "execution_mode": "dag",
+    "max_concurrent_runs": 5,
+    "timeout": "PT10M"
+  },
+  "variables": [],
+  "triggers": [
+    {
+      "id": "manual_trigger",
+      "type": "manual"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "sub_call_1",
+      "name": "Execute Subworkflow",
+      "type": "subworkflow",
+      "depends_on": [],
+      "subworkflow": {
+        "workflow_id": "3de2b9b3-8bc0-4926-8f8d-e89a4756fdd5"
+      }
+    }
+  ],
+  "edges": [],
+  "created_at": "2026-08-20T10:01:35Z",
+  "updated_at": "2026-08-20T10:01:35Z"
+}

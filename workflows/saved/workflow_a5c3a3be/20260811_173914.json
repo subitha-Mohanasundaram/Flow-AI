@@ -1,0 +1,37 @@
+{
+  "name": "Versioned",
+  "description": "Version 3",
+  "nodes": [
+    {
+      "id": "trigger_813093",
+      "name": "Start",
+      "type": "trigger",
+      "trigger": {
+        "type": "manual"
+      }
+    },
+    {
+      "id": "action_813093",
+      "name": "Notify",
+      "type": "notification",
+      "depends_on": [
+        "trigger_813093"
+      ],
+      "notification": {
+        "channel": "slack",
+        "message": "Hello!"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "trigger_813093",
+      "target": "action_813093"
+    }
+  ],
+  "id": "workflow_a5c3a3be",
+  "created_by": "testuser_ae407464",
+  "created_at": "2026-08-11T17:39:12Z",
+  "updated_at": "2026-08-11T17:39:14Z",
+  "updated_by": "testuser_ae407464"
+}

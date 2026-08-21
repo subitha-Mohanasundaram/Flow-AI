@@ -1,0 +1,29 @@
+{
+  "id": "6fa00fe0-94af-4a82-af64-0f475a08efe1",
+  "schema_version": "1.0",
+  "workflow_id": "6fa00fe0-94af-4a82-af64-0f475a08efe1",
+  "name": "Chennai Weather Fetcher",
+  "description": "Fetches current weather data for Chennai, formats it into a readable report, and distributes notifications via Slack and Email while archiving results to Google Sheets.",
+  "version": "1.0.0",
+  "metadata": {
+    "owner": "subi",
+    "created_at": "2026-08-19T08:43:21Z",
+    "updated_at": "2026-08-19T08:43:21Z"
+  },
+  "settings": {
+    "execution_mode": "dag",
+    "max_concurrent_runs": 5,
+    "timeout": "PT10M"
+  },
+  "variables": [],
+  "triggers": [
+    {
+      "id": "manual_trigger",
+      "type": "manual"
+    }
+  ],
+  "nodes": [],
+  "edges": [],
+  "created_at": "2026-08-19T08:43:21Z",
+  "updated_at": "2026-08-19T08:43:21Z"
+}

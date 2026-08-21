@@ -1,0 +1,12 @@
+{
+  "run_id": "run_4e4912e01e0d",
+  "workflow_id": "2f136c7a-d050-4709-a56c-08c5c1757253",
+  "workflow_name": "Loop Iteration E2E Test",
+  "status": "pending",
+  "started_at": "2026-08-20T10:00:50.320250+00:00",
+  "finished_at": null,
+  "node_states": {},
+  "logs": [],
+  "variables": {},
+  "error": null
+}

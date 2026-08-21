@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { Handle, Position } from '@xyflow/react'
-import { Zap, GitBranch, Brain, Bell, Globe, Clock, User, Repeat, AlertCircle, Box } from 'lucide-react'
+import { Zap, GitBranch, Brain, Bell, Globe, Clock, User, Repeat, AlertCircle, Box, ChevronDown, ChevronUp } from 'lucide-react'
 
 // ── Status colours ─────────────────────────────────────────────
 const STATUS = {
@@ -29,6 +30,18 @@ function WorkflowNode({ data, selected }) {
   const status   = data.status || 'idle'
   const s        = STATUS[status] || STATUS.idle
   const isTrigger = nodeType === 'trigger'
+  const [outputOpen, setOutputOpen] = useState(false)
+
+  // Flatten node output to displayable key-value pairs
+  const outputEntries = (() => {
+    if (status !== 'success' || !data.output) return []
+    try {
+      const obj = typeof data.output === 'string' ? JSON.parse(data.output) : data.output
+      return Object.entries(obj).slice(0, 5)  // cap to 5 rows for compactness
+    } catch {
+      return [['result', String(data.output).slice(0, 80)]]
+    }
+  })()
 
   return (
     <div
@@ -86,6 +99,29 @@ function WorkflowNode({ data, selected }) {
           {data.hasTimeout && <span className="badge badge-blue  text-[8px] px-1.5 py-0">⏱ timeout</span>}
           {data.hasError   && <span className="badge badge-red   text-[8px] px-1.5 py-0">⚠ err</span>}
         </div>
+
+        {/* ── Output preview (success nodes only) ── */}
+        {outputEntries.length > 0 && (
+          <div className="mt-2 border-t border-emerald-500/20 pt-1.5">
+            <button
+              className="flex items-center gap-1 text-[9px] font-semibold uppercase tracking-wider text-emerald-400 hover:text-emerald-300 transition-colors w-full"
+              onClick={(e) => { e.stopPropagation(); setOutputOpen(o => !o) }}
+            >
+              {outputOpen ? <ChevronUp className="h-2.5 w-2.5" /> : <ChevronDown className="h-2.5 w-2.5" />}
+              Output
+            </button>
+            {outputOpen && (
+              <div className="mt-1 rounded-md bg-dark-700/60 px-2 py-1.5 space-y-0.5 max-h-20 overflow-y-auto">
+                {outputEntries.map(([k, v]) => (
+                  <div key={k} className="flex items-start gap-1 text-[9px]">
+                    <span className="text-emerald-400 font-semibold shrink-0">{k}:</span>
+                    <span className="text-slate-300 font-mono break-all">{String(v).slice(0, 60)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* bottom handle */}
@@ -97,6 +133,7 @@ function WorkflowNode({ data, selected }) {
     </div>
   )
 }
+
 
 // Export one component per nodeType — React Flow requires separate registrations
 export const nodeTypes = Object.fromEntries(

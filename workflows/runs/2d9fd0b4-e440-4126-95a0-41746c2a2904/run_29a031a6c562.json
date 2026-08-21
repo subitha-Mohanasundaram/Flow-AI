@@ -1,0 +1,12 @@
+{
+  "run_id": "run_29a031a6c562",
+  "workflow_id": "2d9fd0b4-e440-4126-95a0-41746c2a2904",
+  "workflow_name": "Fallback Action E2E Test",
+  "status": "pending",
+  "started_at": "2026-08-20T10:01:04.522247+00:00",
+  "finished_at": null,
+  "node_states": {},
+  "logs": [],
+  "variables": {},
+  "error": null
+}

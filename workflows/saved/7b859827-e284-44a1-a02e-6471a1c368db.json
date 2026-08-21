@@ -1,0 +1,55 @@
+{
+  "id": "7b859827-e284-44a1-a02e-6471a1c368db",
+  "schema_version": "1.0",
+  "workflow_id": "7b859827-e284-44a1-a02e-6471a1c368db",
+  "name": "Run-DryRun",
+  "description": "Created by test suite",
+  "version": "1.0.0",
+  "metadata": {
+    "owner": "testuser_6bacd696",
+    "created_at": "2026-08-19T08:10:33Z",
+    "updated_at": "2026-08-19T08:10:33Z"
+  },
+  "settings": {
+    "execution_mode": "dag",
+    "max_concurrent_runs": 5,
+    "timeout": "PT10M"
+  },
+  "variables": [],
+  "triggers": [
+    {
+      "id": "manual_trigger",
+      "type": "manual"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "trigger_a2caf0",
+      "name": "Start",
+      "type": "trigger",
+      "trigger": {
+        "type": "manual"
+      }
+    },
+    {
+      "id": "action_a2caf0",
+      "name": "Notify",
+      "type": "notification",
+      "depends_on": [
+        "trigger_a2caf0"
+      ],
+      "notification": {
+        "channel": "slack",
+        "message": "Hello!"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "trigger_a2caf0",
+      "target": "action_a2caf0"
+    }
+  ],
+  "created_at": "2026-08-19T08:10:33Z",
+  "updated_at": "2026-08-19T08:10:33Z"
+}

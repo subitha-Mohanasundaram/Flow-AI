@@ -1,0 +1,12 @@
+{
+  "run_id": "run_6a3599000303",
+  "workflow_id": "461e5f9b-f974-4828-9540-eaca8b0dcbb0",
+  "workflow_name": "Human Approval E2E Test",
+  "status": "pending",
+  "started_at": "2026-08-20T10:00:17.894875+00:00",
+  "finished_at": null,
+  "node_states": {},
+  "logs": [],
+  "variables": {},
+  "error": null
+}

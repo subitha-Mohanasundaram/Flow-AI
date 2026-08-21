@@ -30,9 +30,9 @@ export default function Topbar() {
           </div>
           <div className="leading-tight hidden sm:block">
             <div className="text-sm font-extrabold tracking-tight text-white">
-              EduEval <span className="text-brand-400">AI</span>
+              Flow <span className="text-brand-400">AI</span>
             </div>
-            <div className="text-[10px] text-slate-500 tracking-widest font-medium uppercase">Evaluation</div>
+            <div className="text-[10px] text-slate-500 tracking-widest font-medium uppercase">Automation</div>
           </div>
         </Link>
 

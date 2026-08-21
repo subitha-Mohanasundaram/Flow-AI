@@ -1,0 +1,36 @@
+{
+  "name": "Listed-bcc814",
+  "description": "Created by test suite",
+  "nodes": [
+    {
+      "id": "trigger_d616f9",
+      "name": "Start",
+      "type": "trigger",
+      "trigger": {
+        "type": "manual"
+      }
+    },
+    {
+      "id": "action_d616f9",
+      "name": "Notify",
+      "type": "notification",
+      "depends_on": [
+        "trigger_d616f9"
+      ],
+      "notification": {
+        "channel": "slack",
+        "message": "Hello!"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "trigger_d616f9",
+      "target": "action_d616f9"
+    }
+  ],
+  "id": "workflow_0f59c2f9",
+  "created_by": "testuser_20b2c857",
+  "created_at": "2026-08-11T17:42:28Z",
+  "updated_at": "2026-08-11T17:42:28Z"
+}

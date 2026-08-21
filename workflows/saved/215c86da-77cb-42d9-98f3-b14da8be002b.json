@@ -1,0 +1,55 @@
+{
+  "id": "215c86da-77cb-42d9-98f3-b14da8be002b",
+  "schema_version": "1.0",
+  "workflow_id": "215c86da-77cb-42d9-98f3-b14da8be002b",
+  "name": "Update-Me",
+  "description": "Created by test suite",
+  "version": "1.0.0",
+  "metadata": {
+    "owner": "testuser_36e27256",
+    "created_at": "2026-08-19T08:10:02Z",
+    "updated_at": "2026-08-19T08:10:02Z"
+  },
+  "settings": {
+    "execution_mode": "dag",
+    "max_concurrent_runs": 5,
+    "timeout": "PT10M"
+  },
+  "variables": [],
+  "triggers": [
+    {
+      "id": "manual_trigger",
+      "type": "manual"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "trigger_284e2a",
+      "name": "Start",
+      "type": "trigger",
+      "trigger": {
+        "type": "manual"
+      }
+    },
+    {
+      "id": "action_284e2a",
+      "name": "Notify",
+      "type": "notification",
+      "depends_on": [
+        "trigger_284e2a"
+      ],
+      "notification": {
+        "channel": "slack",
+        "message": "Hello!"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "trigger_284e2a",
+      "target": "action_284e2a"
+    }
+  ],
+  "created_at": "2026-08-19T08:10:02Z",
+  "updated_at": "2026-08-19T08:10:02Z"
+}

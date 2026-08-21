@@ -1,0 +1,36 @@
+{
+  "name": "CRUD-Create",
+  "description": "Created by test suite",
+  "nodes": [
+    {
+      "id": "trigger_2e3282",
+      "name": "Start",
+      "type": "trigger",
+      "trigger": {
+        "type": "manual"
+      }
+    },
+    {
+      "id": "action_2e3282",
+      "name": "Notify",
+      "type": "notification",
+      "depends_on": [
+        "trigger_2e3282"
+      ],
+      "notification": {
+        "channel": "slack",
+        "message": "Hello!"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "trigger_2e3282",
+      "target": "action_2e3282"
+    }
+  ],
+  "id": "workflow_e86abf20",
+  "created_by": "testuser_0aafcba3",
+  "created_at": "2026-08-11T17:35:19Z",
+  "updated_at": "2026-08-11T17:35:19Z"
+}

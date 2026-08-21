@@ -1,0 +1,36 @@
+{
+  "name": "Single-Get",
+  "description": "Created by test suite",
+  "nodes": [
+    {
+      "id": "trigger_238d4a",
+      "name": "Start",
+      "type": "trigger",
+      "trigger": {
+        "type": "manual"
+      }
+    },
+    {
+      "id": "action_238d4a",
+      "name": "Notify",
+      "type": "notification",
+      "depends_on": [
+        "trigger_238d4a"
+      ],
+      "notification": {
+        "channel": "slack",
+        "message": "Hello!"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "trigger_238d4a",
+      "target": "action_238d4a"
+    }
+  ],
+  "id": "workflow_4f53b721",
+  "created_by": "testuser_0aafcba3",
+  "created_at": "2026-08-11T17:35:19Z",
+  "updated_at": "2026-08-11T17:35:19Z"
+}

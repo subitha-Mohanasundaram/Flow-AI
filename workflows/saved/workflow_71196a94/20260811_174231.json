@@ -1,0 +1,36 @@
+{
+  "name": "Restore-Test",
+  "description": "Created by test suite",
+  "nodes": [
+    {
+      "id": "trigger_c4d348",
+      "name": "Start",
+      "type": "trigger",
+      "trigger": {
+        "type": "manual"
+      }
+    },
+    {
+      "id": "action_c4d348",
+      "name": "Notify",
+      "type": "notification",
+      "depends_on": [
+        "trigger_c4d348"
+      ],
+      "notification": {
+        "channel": "slack",
+        "message": "Hello!"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "trigger_c4d348",
+      "target": "action_c4d348"
+    }
+  ],
+  "id": "workflow_71196a94",
+  "created_by": "testuser_20b2c857",
+  "created_at": "2026-08-11T17:42:31Z",
+  "updated_at": "2026-08-11T17:42:31Z"
+}
