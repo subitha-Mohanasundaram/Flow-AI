@@ -513,21 +513,24 @@ try:  # Optional: will be available after `pip install -r requirements.txt`
 except Exception:
     templates = None
 
-# ── Serve compiled React frontend (when deployed on Render) ───────────────
-# Set SERVE_REACT=true in env to enable. Build: npm --prefix frontend run build
+# ── Serve compiled React frontend (auto-detected when frontend/dist exists) ──
+# Build with: npm --prefix frontend run build
 _REACT_DIST = Path("frontend") / "dist"
-_SERVE_REACT = os.environ.get("SERVE_REACT", "").lower() in ("1", "true", "yes")
+_REACT_INDEX = _REACT_DIST / "index.html"
+# Auto-enable: no env var needed — just having the build is enough
+_SERVE_REACT = _REACT_INDEX.exists()
 
-if _SERVE_REACT and _REACT_DIST.is_dir():
+if _SERVE_REACT:
     try:
         from fastapi.staticfiles import StaticFiles
-        # Mount assets sub-directory at /assets (Vite outputs here)
         _assets_dir = _REACT_DIST / "assets"
         if _assets_dir.is_dir():
             app.mount("/assets", StaticFiles(directory=str(_assets_dir)), name="react-assets")
-        logger.info("React frontend static files mounted from %s", _REACT_DIST)
+        logger.info("Flow AI React frontend auto-detected and mounted from %s", _REACT_DIST)
     except Exception as _e:
         logger.warning("Failed to mount React static files: %s", _e)
+else:
+    logger.info("React build not found at %s — serving legacy HTML platform", _REACT_DIST)
 
 
 @app.post("/presence/ping")

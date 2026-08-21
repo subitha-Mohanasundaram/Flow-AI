@@ -1,0 +1,9 @@
+﻿{
+  "buildCommand": "npm --prefix frontend install && npm --prefix frontend run build",
+  "outputDirectory": "frontend/dist",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+  "env": {
+    "VITE_API_URL": "https://flow-ai-vlml.onrender.com"
+  },
+  "framework": null
+}
