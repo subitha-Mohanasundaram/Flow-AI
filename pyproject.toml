@@ -1,2 +1,7 @@
+[project] 
+name = "flow-ai" 
+version = "0.1.0" 
+dependencies = [] 
+ 
 [tool.vercel] 
 entrypoint = "web_app:app" 
