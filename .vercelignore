@@ -1,0 +1,6 @@
+chroma_db/ 
+workflows/huey_queue.db 
+workflows/runs/ 
+frontend/ 
+.venv/ 
+__pycache__/ 
