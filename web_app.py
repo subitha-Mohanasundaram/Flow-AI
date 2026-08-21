@@ -3413,3 +3413,16 @@ async def api_ai_chat(request: Request):
         return JSONResponse({"error": f"AI builder unavailable: {e}"}, status_code=503)
     return JSONResponse(result)
 
+
+import os
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+if os.path.exists("frontend/dist"):
+    app.mount("/assets", StaticFiles(directory="frontend/dist/assets"), name="assets")
+
+    @app.get("/{full_path:path}")
+    async def serve_react_app(full_path: str):
+        if full_path.startswith("api"):
+            return None
+        return FileResponse("frontend/dist/index.html")
