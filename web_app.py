@@ -529,6 +529,23 @@ if _SERVE_REACT:
         logger.info("Flow AI React frontend auto-detected and mounted from %s", _REACT_DIST)
     except Exception as _e:
         logger.warning("Failed to mount React static files: %s", _e)
+
+    # Middleware to intercept legacy page routing and serve React index.html instead
+    @app.middleware("http")
+    async def _serve_react_spa_middleware(request: Request, call_next):
+        if request.method == "GET":
+            path = request.url.path
+            # Do not intercept API, presence, or static asset requests
+            if (not path.startswith("/api/") and 
+                not path.startswith("/presence/") and 
+                not path.startswith("/assets/") and 
+                not any(path.endswith(ext) for ext in [".js", ".css", ".png", ".jpg", ".svg", ".ico", ".json", ".map", ".txt", ".woff", ".woff2"])):
+                
+                index_html = _REACT_DIST / "index.html"
+                if index_html.exists():
+                    return HTMLResponse(content=index_html.read_text(encoding="utf-8"))
+        
+        return await call_next(request)
 else:
     logger.info("React build not found at %s — serving legacy HTML platform", _REACT_DIST)
 
