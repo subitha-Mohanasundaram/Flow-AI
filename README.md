@@ -6,7 +6,7 @@ Instead of manually creating automation nodes and configuring every step, users 
 
 The goal is to make workflow automation accessible to both technical and non-technical users.
 
----
+---         
 
 ## Project Vision
 
