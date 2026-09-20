@@ -5,7 +5,9 @@
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ],
-  "env": {
-    "VITE_API_URL": "https://flow-ai-vlml.onrender.com"
+  "build": {
+    "env": {
+      "VITE_API_URL": "https://flow-ai-vlml.onrender.com"
+    }
   }
 }
